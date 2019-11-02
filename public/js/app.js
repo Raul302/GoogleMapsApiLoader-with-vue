@@ -1903,6 +1903,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -2013,6 +2014,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         console.log(myLatLng2);
 
         _this2.marker(myLatLng2);
+
+        var myLatLng = {
+          lat: _this2.location.coords.latitude,
+          lng: _this2.location.coords.longitude
+        };
+
+        _this2.drawRoute(myLatLng, myLatLng2);
       });
     },
     initializeMap: function initializeMap() {
@@ -2032,16 +2040,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         title: "Raul!"
       });
     },
-    drawRoute: function drawRoute(position) {
+    drawRoute: function drawRoute(position, position2) {
       var directionsService = new google.maps.DirectionsService();
       var directionsRenderer = new google.maps.DirectionsRenderer();
       directionsRenderer.setMap(this.map);
       directionsService.route({
         origin: position,
-        destination: {
-          lat: 23.6345005,
-          lng: -102.5527878
-        },
+        destination: position2,
         travelMode: 'DRIVING'
       }, function (response, status) {
         if (status === 'OK') {
@@ -40087,6 +40092,7 @@ var render = function() {
       _c("input", {
         ref: "autocomplete",
         staticClass: "search-location",
+        staticStyle: { width: "300px" },
         attrs: { placeholder: "Search", onfocus: "value = ''", type: "text" }
       }),
       _vm._v(" "),

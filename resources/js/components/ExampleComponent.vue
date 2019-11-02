@@ -1,13 +1,14 @@
 <template>
   <div>
     
- <input ref="autocomplete" 
+ <input  style="width:300px" ref="autocomplete" 
         placeholder="Search" 
         class="search-location"
         onfocus="value = ''" 
         type="text" />
 
     <div class="google-map" ref="googleMap"></div>
+    
     <template v-if="Boolean(this.google) && Boolean(this.map)">
       <slot
         :google="google"
@@ -89,8 +90,6 @@ export default {
         lat: this.location.coords.latitude,
          lng: this.location.coords.longitude
          }
-
-        
     this.marker(myLatLng);
     // this.drawRoute(myLatLng)
     }, err => {
@@ -133,6 +132,11 @@ export default {
          }
          console.log(myLatLng2)
      this.marker(myLatLng2);
+     var myLatLng = {
+        lat: this.location.coords.latitude,
+         lng: this.location.coords.longitude
+         }
+     this.drawRoute(myLatLng,myLatLng2)
 });
    },
     initializeMap() {
@@ -151,7 +155,7 @@ export default {
        });
      
      },
-   drawRoute(position){
+   drawRoute(position,position2){
       var directionsService = new google.maps.DirectionsService();
       var directionsRenderer = new google.maps.DirectionsRenderer();
 
@@ -160,7 +164,7 @@ export default {
       directionsService.route(
       {
         origin: position,
-        destination: {lat:23.6345005, lng: -102.5527878},
+        destination: position2,
         travelMode: 'DRIVING'
       },
       function(response, status) {
