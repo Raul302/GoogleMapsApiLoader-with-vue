@@ -1916,46 +1916,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       errorStr: null,
       origin: null,
       destination: null,
-      search: null,
-      placeSearch: "",
-      autocomplete: "",
-      autocomplete_textarea: "",
-      places: 'places',
-      componentForm: {
-        street_number: 'short_name',
-        route: 'long_name',
-        locality: 'long_name',
-        administrative_area_level_1: 'short_name',
-        country: 'long_name',
-        postal_code: 'short_name'
-      }
+      search: null
     };
   },
   created: function created() {
-    var _this = this;
-
-    //do we support geolocation
-    if (!("geolocation" in navigator)) {
-      this.errorStr = 'Geolocation is not available.';
-      return;
-    }
-
-    this.gettingLocation = true; // get position
-
-    navigator.geolocation.getCurrentPosition(function (pos) {
-      _this.gettingLocation = false;
-      _this.location = pos;
-      var myLatLng = {
-        lat: _this.location.coords.latitude,
-        lng: _this.location.coords.longitude
-      };
-
-      _this.marker(myLatLng); // this.drawRoute(myLatLng)
-
-    }, function (err) {
-      _this.gettingLocation = false;
-      _this.errorStr = err.message;
-    }); //
+    this.Actual();
   },
   mounted: function () {
     var _mounted = _asyncToGenerator(
@@ -1975,10 +1940,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             case 2:
               googleMapApi = _context.sent;
               this.google = googleMapApi;
-              this.initializeMap();
+              this.initializeMap(); // Iniciar autocomplete
+
               this.autocomplete = new google.maps.places.Autocomplete(this.$refs.autocomplete, {
                 types: ['geocode']
-              });
+              }); // Metodo para dibujar el 2 marcador y trazar la ruta
+
               this.To();
 
             case 7:
@@ -1996,6 +1963,39 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     return mounted;
   }(),
   methods: {
+    // Ubicacion actual
+    Actual: function Actual() {
+      var _this = this;
+
+      //do we support geolocation
+      if (!("geolocation" in navigator)) {
+        this.errorStr = 'Geolocation is not available.';
+        return;
+      }
+
+      this.gettingLocation = true; // get position
+
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        _this.gettingLocation = false;
+        _this.location = pos;
+        var myLatLng = {
+          lat: _this.location.coords.latitude,
+          lng: _this.location.coords.longitude
+        };
+        var marker = new google.maps.Marker({
+          position: myLatLng,
+          map: _this.map,
+          title: "Raul!",
+          icon: {
+            url: "http://maps.google.com/mapfiles/kml/shapes/play.png"
+          }
+        }); // this.drawRoute(myLatLng)
+      }, function (err) {
+        _this.gettingLocation = false;
+        _this.errorStr = err.message;
+      }); //
+    },
+    // Trazar ruta y segundo marcador
     To: function To() {
       var _this2 = this;
 
@@ -2007,6 +2007,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         var lon = place.geometry.location.lng();
         var city = ac[0]["short_name"];
         console.log("Ciudad ".concat(city, " latitud ").concat(lat, ", longitud: ").concat(lon));
+        console.log("Si funca");
         var myLatLng2 = {
           lat: lat,
           lng: lon
@@ -2023,6 +2024,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         _this2.drawRoute(myLatLng, myLatLng2);
       });
     },
+    //  Iniciar Mapa
     initializeMap: function initializeMap() {
       var mapContainer = this.$refs.googleMap;
       this.map = new this.google.maps.Map(mapContainer, {
@@ -2033,16 +2035,29 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         zoom: 6
       });
     },
+    // Marcadores
     marker: function marker(position) {
       var marker = new google.maps.Marker({
         position: position,
         map: this.map,
-        title: "Raul!"
+        title: "Raul!",
+        icon: {
+          url: "http://maps.google.com/mapfiles/kml/shapes/poi.png"
+        }
       });
     },
+    //  Pintar
     drawRoute: function drawRoute(position, position2) {
-      var directionsService = new google.maps.DirectionsService();
-      var directionsRenderer = new google.maps.DirectionsRenderer();
+      var directionsService = new google.maps.DirectionsService(); // var directionsRenderer = new google.maps.DirectionsRenderer();
+
+      var polylineOptionsActual = new google.maps.Polyline({
+        strokeColor: '#572364 ',
+        strokeOpacity: 1.0,
+        strokeWeight: 10
+      });
+      var directionsRenderer = new google.maps.DirectionsRenderer({
+        polylineOptions: polylineOptionsActual
+      });
       directionsRenderer.setMap(this.map);
       directionsService.route({
         origin: position,
@@ -2055,14 +2070,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           window.alert('Directions request failed due to ' + status);
         }
       });
-    },
-    Autocomplete: function Autocomplete() {
-      // Cree el objeto de autocompletado, restringiendo la búsqueda
-      var autocomplete = new google.maps.places.Autocomplete(this.$refs.infowindowc, {
-        types: ['geocode']
-      });
-      console.log(this.search);
-    }
+    } // Autocompletado
+    // Autocomplete(){
+    //   // Cree el objeto de autocompletado, restringiendo la búsqueda
+    // var autocomplete = new google.maps.places.Autocomplete(
+    //  (this.$refs.infowindowc),
+    //   { types: ['geocode'] });
+    //     console.log(this.search);
+    // }
+
   }
 });
 
